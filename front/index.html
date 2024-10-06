@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect 4</title>
+    <link rel="stylesheet" href="connect4_style.css">
+</head>
+<body>
+    <h1>Connect 4</h1>
+    <button id="newGame">New Game</button>
+    <table id="connect4">
+    </table>
+</body>
+</html>
+<script>
+// Initialize variables
+var actions = {
+    "start": "http://localhost:8080/gameState/start",
+    "dropChip": "http://localhost:8080/gameState/dropChip"
+};
+
+document.getElementById('newGame').addEventListener('click', ()=>startGame());
+
+async function startGame() {
+    console.log("starting");
+    let gameData = await fetch(actions['start'])
+        .then(response => response.json())
+        .then(v=> updateGameBoard(v))
+}
+
+// Create the table structure in HTML
+function updateGameBoard(gameData) {
+    const boardElement = document.getElementById('connect4');
+    boardElement.innerHTML = '';
+    console.log(gameData);
+    console.log(gameData.board);
+    gameData.board.forEach((row, rowIndex) => {
+        const tr = document.createElement('tr');
+        row.forEach((cell, colIndex) => {
+            const td = document.createElement('td');
+            console.log("cell " + cell);
+            if (cell === 0) {
+                console.log("reach2");
+                td.classList.add('red'); // Player 0
+            } else if (cell === '1') {
+                td.classList.add('yellow'); // Player 1
+            }
+            td.addEventListener('click', () => dropChip(colIndex)); // Make a move on click
+            tr.appendChild(td);
+        });
+        boardElement.appendChild(tr);
+    });
+}
+
+async function dropChip(col) {
+    console.log(`Dropping chip in column: ${col}`);
+    let promise = await fetch(actions['dropChip'] + '?col=' + col)
+        .then(response => response.json())
+        .then(response => updateGameBoard(response));
+}
+
+/*
+    for (let row = 0; row < rows; row++) {
+        const tr = document.createElement('tr');
+        for (let col = 0; col < cols; col++) {
+            const td = document.createElement('td');
+            td.setAttribute('id', `${row}-${col}`);
+            td.addEventListener('click', () => dropPiece(col));  // Handle clicks
+            tr.appendChild(td);
+        }
+        table.appendChild(tr);
+    }
+*/
+
+// Function to drop a piece in the selected column
+/*
+function dropPiece(col) {
+    for (let row = rows - 1; row >= 0; row--) {  // Start from the bottom
+        if (board[row][col] === '') {
+            board[row][col] = currentPlayer;
+            document.getElementById(`${row}-${col}`).classList.add(currentPlayer);  // Color the piece
+            if (checkWin(row, col)) {
+                alert(`${currentPlayer.toUpperCase()} wins!`);
+                resetGame();
+            }
+           // currentPlayer = currentPlayer === 'red' ? 'yellow' : 'red';  // Switch player
+            break;
+        }
+    }
+}
+
+// Function to check if there's a winning combination
+function checkWin(row, col) {
+    return checkDirection(row, col, 1, 0) ||  // Horizontal
+           checkDirection(row, col, 0, 1) ||  // Vertical
+           checkDirection(row, col, 1, 1) ||  // Diagonal right-down
+           checkDirection(row, col, 1, -1);   // Diagonal left-down
+}
+
+// Check a specific direction for four consecutive pieces
+function checkDirection(row, col, rowDir, colDir) {
+    let count = 0;
+    for (let i = -3; i <= 3; i++) {
+        const r = row + i * rowDir;
+        const c = col + i * colDir;
+        if (r >= 0 && r < rows && c >= 0 && c < cols && board[r][c] === currentPlayer) {
+            count++;
+            if (count === 4) return true;
+        } else {
+            count = 0;
+        }
+    }
+    return false;
+}
+
+// Reset the game board
+function resetGame() {
+    board = Array(rows).fill().map(() => Array(cols).fill(''));
+    const cells = document.querySelectorAll('td');
+    cells.forEach(cell => cell.classList.remove('red', 'yellow'));
+}
+
+// Initialize the game
+*/
+</script>
