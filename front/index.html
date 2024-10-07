@@ -44,6 +44,7 @@
     // Create the table structure in HTML
     function updateGameBoard(gameData) {
         updateCurTurnText(gameData.curPlayer);
+        
         const boardElement = document.getElementById('connect4');
         boardElement.innerHTML = '';
         gameData.board.forEach((row, rowIndex) => {
@@ -60,8 +61,16 @@
             });
             boardElement.appendChild(tr);
         });
+       // alertWinner(gameData.winner);
     }
 
+    function alertWinner(winnerNum){
+        if(winnerNum != -1){
+            let curPlayerString = (winnerNum == 0) ? "red" : "yellow";
+            alert(`${curPlayerString} wins!`);
+            startGame();
+        }
+    }
     function updateCurTurnText(curPlayer) {
         const curPlayerElement = document.getElementById('curTurn');
         let curPlayerString = (curPlayer == 0) ? "red" : "yellow";
@@ -77,6 +86,9 @@
             .then(response => response.json())
             .then(response => {
                 updateGameBoard(response);
+                setTimeout(() => {
+                    alertWinner(response.winner);
+                }, 100);
             }
             );
     }

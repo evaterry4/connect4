@@ -40,7 +40,7 @@ class Game {
         this.gameStatus = "new";
         this.curPlayer = 0;
         this.board = Array(this.rows).fill().map(() => Array(this.cols).fill('')); 
-        this.turnCount = 0;
+        this.winner = -1;
     }
 
     dropChip(col) {
@@ -51,6 +51,7 @@ class Game {
             if (this.board[row][col] === '') {
                 this.board[row][col] = this.curPlayer;
                 if(this.checkWin(row, col)){
+                    this.winner = this.curPlayer;
                     console.log('${currentPlayer} wins!');
                 }
                 this.curPlayer = this.switchPlayer(this.curPlayer);
