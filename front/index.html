@@ -64,6 +64,9 @@
                 } else if (cell === 1) {
                     td.classList.add('yellow');
                 }
+                else{
+                    td.classList.add('blue');
+                }
                 td.addEventListener('click', () => dropChip(colIndex)); 
                 tr.appendChild(td);
             });
@@ -74,12 +77,8 @@
     function alertWinner(winnerNum){
         if(winnerNum != -1){
             let curPlayerString = (winnerNum == 0) ? "red" : "yellow";
-            
-            
             alert(`${curPlayerString} wins!`);
-            setTimeout(() => {
-                updateGameStatus("${curPlayerString} wins!", winnerNum, winnerNum);
-            }, 2000);
+            updateGameStatus("${curPlayerString} wins!", winnerNum, winnerNum);
             startGame();
         }
     }
