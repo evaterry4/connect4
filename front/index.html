@@ -25,11 +25,10 @@
 <script>
     // Initialize variables
     var actions = {
-        "start": "http://localhost:8080/gameState/start",
-        "dropChip": "http://localhost:8080/gameState/dropChip",
-        "getGameState": "http://localhost:8080/gameState/getGameState"
-        //,
-       // "checkWin": "http://localhost:8080/checkWin"
+        "start": "http://localhost:8080/gameBoard/start",
+        "dropChip": "http://localhost:8080/gameBoard/dropChip",
+        "getGameState": "http://localhost:8080/gameBoard/getGameState",
+        "gameStatus": "http://localhost:8080/gameStatus",
     };
 
     document.getElementById('newGame').addEventListener('click', () => startGame());
@@ -38,7 +37,18 @@
         console.log("starting");
         let gameData = await fetch(actions['start'])
             .then(response => response.json())
-            .then(v => updateGameBoard(v))
+            .then(v => {
+                updateGameBoard(v);
+                updateGameStatus("new game", v.curPlayer, v.winner);
+            });
+    }
+
+    async function updateGameStatus(status, curPlayerNum, winnerNum) {
+        document.getElementById("status").innerHTML = status;
+        console.log("in update status");
+        await fetch(actions['gameStatus'] + '?status=' + status + '&curPlayerNum=' + curPlayerNum + '&winnerNum=' + winnerNum)
+            .then(response => response.json())
+            .then(data => console.log("Status updated:", data));
     }
 
     // Create the table structure in HTML
@@ -67,6 +77,7 @@
     function alertWinner(winnerNum){
         if(winnerNum != -1){
             let curPlayerString = (winnerNum == 0) ? "red" : "yellow";
+            updateGameStatus("${curPlayerString} wins!", winnerNum, winnerNum);
             alert(`${curPlayerString} wins!`);
             startGame();
         }

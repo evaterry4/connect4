@@ -2,7 +2,7 @@ const http = require('http');
 const url = require('url');
 
 const hostname = "127.0.0.1";
-const port = 5001;
+const port = 5006;
 const server = http.createServer();
 
 server.on('request', ( request, response) => {
@@ -14,30 +14,26 @@ server.on('request', ( request, response) => {
 server.listen(port, hostname, () => console.log('server running on ' + port + ' at ' + hostname))
 
 function handleRequest(q) {
-    if(q.pathname == "/start"){
-        //start a new game
-        game = new Game();
-    } else if(q.pathname == '/status') {
-        let isActive = q.query['active'];
-        let curPlayerNum = q.query['curPlayerNum'];
-        let winnerNum = q.query['winnerNum'];
-        game.changeStatus(isActive);
-        game.switchPlayer(curPlayerNum);
-        game.setWinner(winnerNum);
+    let isActive = q.query['active'];
+    let curPlayerNum = q.query['curPlayerNum'];
+    let winnerNum = q.query['winnerNum'];
+    game.changeStatus(isActive);
+    game.switchPlayer(curPlayerNum);
+    game.setWinner(winnerNum);
         
-    }
+    
     return game;
 }
 
 class Game {
     constructor () {
         this.curPlayer = 0;
-        this.active = true;
+        this.status = "new";
         this.winner = -1;
     }
 
-    changeStatus(isCurActive){
-        this.active = !isCurActive; 
+    changeStatus(status){
+        this.status = status; 
     }
 
     switchPlayer(curPlayerNum){
