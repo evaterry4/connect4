@@ -28,6 +28,9 @@ function handleRequest(q) {
         game.dropChip(colNum);
         // return board;
     }
+    else if(q.pathname == "/getGameState"){
+        return game;
+    }
     
     return game;
     // else if(q.pathname == '/dropChip') {
@@ -47,13 +50,17 @@ class Game {
         this.gameStatus = "new";
         this.curPlayer = 0;
         this.board = Array(this.rows).fill().map(() => Array(this.cols).fill('')); 
+        this.turnCount = 0;
     }
 
     dropChip(col) {
+        if(this.gameStatus == "complete"){
+            return;
+        }
         for (let row = this.rows - 1; row >= 0; row--) {  // Start from the bottom
             if (this.board[row][col] === '') {
                 this.board[row][col] = this.curPlayer;
-                // document.getElementById(`${row}-${col}`).classList.add(currentPlayer);  // Color the piece
+                this.curPlayer = this.switchPlayer(this.curPlayer);
                 // if (checkWin(row, col)) {
                 //     alert(`${currentPlayer.toUpperCase()} wins!`);
                 //     resetGame();
@@ -65,6 +72,10 @@ class Game {
                 return this.board;
             }
         }
+    }
+
+    switchPlayer(curPlayer){
+        return (curPlayer == 0) ? 1 : 0;
     }
 
 }
