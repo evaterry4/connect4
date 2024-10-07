@@ -13,7 +13,12 @@
     <button id="newGame">New Game</button>
     <table id="connect4">
     </table>
-    <h2 id="curPlayer"></h2>
+    <h2 id="curTurn"></h2>
+    <div>
+        <label><input type="radio" name="selectedPlayer" value="red" checked>Red Player</label>
+        <label><input type="radio" name="selectedPlayer" value="yellow">Yellow Player</label>
+    </div>
+    <h2 id="status">Incomplete</h2>
 </body>
 
 </html>
@@ -22,7 +27,8 @@
     var actions = {
         "start": "http://localhost:8080/gameState/start",
         "dropChip": "http://localhost:8080/gameState/dropChip",
-        "getGameState": "http://localhost:8080/gameState/getGameState"
+        "getGameState": "http://localhost:8080/gameState/getGameState",
+        "checkWin": "http://localhost:8080/checkWin"
     };
 
     document.getElementById('newGame').addEventListener('click', () => startGame());
@@ -36,7 +42,7 @@
 
     // Create the table structure in HTML
     function updateGameBoard(gameData) {
-        updateCurPlayerText(gameData.curPlayer);
+        updateCurTurnText(gameData.curPlayer);
         const boardElement = document.getElementById('connect4');
         boardElement.innerHTML = '';
         gameData.board.forEach((row, rowIndex) => {
@@ -55,18 +61,24 @@
         });
     }
 
-    function updateCurPlayerText(curPlayer) {
-        const curPlayerElement = document.getElementById('curPlayer');
+    function updateCurTurnText(curPlayer) {
+        const curPlayerElement = document.getElementById('curTurn');
         let curPlayerString = (curPlayer == 0) ? "red" : "yellow";
-        curPlayerElement.innerHTML = "Current Player: " + curPlayerString;
+        curPlayerElement.innerHTML = "Current Turn: " + curPlayerString;
 
     }
 
     async function dropChip(col) {
-        console.log(`Dropping chip in column: ${col}`);
-        let promise = await fetch(actions['dropChip'] + '?col=' + col)
+        const selectedPlayer = document.querySelector('input[name="selectedPlayer"]:checked').value;
+
+        console.log(selectedPlayer);
+        let promise = await fetch(actions['dropChip'] + '?col=' + col + '&selectedPlayer=' + selectedPlayer)
             .then(response => response.json())
-            .then(response => updateGameBoard(response));
+            .then(response => {
+                updateGameBoard(response)
+                checkWin(response.board, response.curPlayer)
+            }
+            );
     }
 
     setInterval(async () => {
@@ -75,6 +87,12 @@
             .then(response => response.json());
         updateGameBoard(gameData);  // Pass the fetched data to the update function
     }, 1000);
+
+    async function checkWin(board, curPlayer){
+        // curPlayer is 0 (yellow) and 1 (red) here
+
+
+    }
     
     /*
         for (let row = 0; row < rows; row++) {
