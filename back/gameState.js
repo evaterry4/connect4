@@ -28,7 +28,7 @@ function handleRequest(q) {
     else if(q.pathname == "/getGameState"){
         return game;
     }
-    
+
     return game;
 }
 
@@ -51,6 +51,7 @@ class Game {
             if (this.board[row][col] === '') {
                 this.board[row][col] = this.curPlayer;
                 this.curPlayer = this.switchPlayer(this.curPlayer);
+                // this.checkWin(row, col);
                 return this.board;
             }
         }
@@ -59,6 +60,30 @@ class Game {
     switchPlayer(curPlayer){
         return (curPlayer == 0) ? 1 : 0;
     }
+
+    checkWin(row, col) {
+        return this.checkDirection(row, col, 1, 0) ||  // Horizontal
+               this.checkDirection(row, col, 0, 1) ||  // Vertical
+               this.checkDirection(row, col, 1, 1) ||  // Diagonal right-down
+               this.checkDirection(row, col, 1, -1);   // Diagonal left-down
+    }
+    
+    // Check a specific direction for four consecutive pieces
+    checkDirection(row, col, rowDir, colDir) {
+        let count = 0;
+        for (let i = -3; i <= 3; i++) {
+            const r = row + i * rowDir;
+            const c = col + i * colDir;
+            if (r >= 0 && r < this.rows && c >= 0 && c < this.cols && this.board[r][c] === currentPlayer) {
+                count++;
+                if (count === 4) return true;
+            } else {
+                count = 0;
+            }
+        }
+        return false;
+    }
+
 
 }
 

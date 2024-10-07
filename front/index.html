@@ -27,8 +27,9 @@
     var actions = {
         "start": "http://localhost:8080/gameState/start",
         "dropChip": "http://localhost:8080/gameState/dropChip",
-        "getGameState": "http://localhost:8080/gameState/getGameState",
-        "checkWin": "http://localhost:8080/checkWin"
+        "getGameState": "http://localhost:8080/gameState/getGameState"
+        //,
+       // "checkWin": "http://localhost:8080/checkWin"
     };
 
     document.getElementById('newGame').addEventListener('click', () => startGame());
@@ -75,11 +76,18 @@
         let promise = await fetch(actions['dropChip'] + '?col=' + col + '&selectedPlayer=' + selectedPlayer)
             .then(response => response.json())
             .then(response => {
-                updateGameBoard(response)
-                checkWin(response.board, response.curPlayer)
+                updateGameBoard(response);
             }
             );
     }
+
+    
+
+   /* async function updateStatus(response){
+        // curPlayer is 0 (yellow) and 1 (red) here
+        let promise = await fetch(actions['checkWin'] + '?board' + board)
+
+    }*/
 
     setInterval(async () => {
         console.log("Fetching latest game state...");
@@ -87,12 +95,6 @@
             .then(response => response.json());
         updateGameBoard(gameData);  // Pass the fetched data to the update function
     }, 1000);
-
-    async function checkWin(board, curPlayer){
-        // curPlayer is 0 (yellow) and 1 (red) here
-
-
-    }
     
     /*
         for (let row = 0; row < rows; row++) {
