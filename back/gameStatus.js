@@ -17,15 +17,15 @@ function handleRequest(q) {
     let isActive = q.query['active'];
     let curPlayerNum = q.query['curPlayerNum'];
     let winnerNum = q.query['winnerNum'];
-    game.changeStatus(isActive);
-    game.switchPlayer(curPlayerNum);
-    game.setWinner(winnerNum);
+    gameStatus.changeStatus(isActive);
+    gameStatus.switchPlayer(curPlayerNum);
+    gameStatus.setWinner(winnerNum);
         
     
-    return game;
+    return gameStatus;
 }
 
-class Game {
+class GameStatus {
     constructor () {
         this.curPlayer = 0;
         this.status = "new";
@@ -46,4 +46,4 @@ class Game {
 }
 
 //instantiate object if it doesn't exist
-var game = game || new Game();
+var gameStatus = gameStatus || new GameStatus();

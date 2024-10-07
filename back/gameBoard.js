@@ -5,27 +5,27 @@ const hostname = "127.0.0.1";
 const port = 5005;
 const server = http.createServer();
 
-server.on('request', ( request, response) => {
+server.on('request', (request, response) => {
     let q = url.parse(request.url, true);
 
-    response.writeHead(200, { 'Content-type': 'application/JSON'});
-    response.end(JSON.stringify( handleRequest(q)));
+    response.writeHead(200, { 'Content-type': 'application/JSON' });
+    response.end(JSON.stringify(handleRequest(q)));
 })
 
 server.listen(port, hostname, () => console.log('server running on ' + port + ' at ' + hostname))
 
 function handleRequest(q) {
-    if(q.pathname == "/start"){
+    if (q.pathname == "/start") {
         game = new Game();
-    } 
-    else if(q.pathname == "/dropChip"){
+    }
+    else if (q.pathname == "/dropChip") {
         let colNum = Number(q.query['col']);
         let curPlayerColor = q.query['selectedPlayer'];
-        if((curPlayerColor == "red" && game.curPlayer == 0) || (curPlayerColor == "yellow" && game.curPlayer == 1)){
+        if ((curPlayerColor == "red" && game.curPlayer == 0) || (curPlayerColor == "yellow" && game.curPlayer == 1)) {
             game.dropChip(colNum);
-        }       
+        }
     }
-    else if(q.pathname == "/getGameState"){
+    else if (q.pathname == "/getGameState") {
         return game;
     }
 
@@ -34,45 +34,39 @@ function handleRequest(q) {
 
 
 class Game {
-    constructor () {
-        this.rows=6;
-        this.cols=7;
-        this.gameStatus = "new";
+    constructor() {
+        this.rows = 6;
+        this.cols = 7;
         this.curPlayer = 0;
-        this.board = Array(this.rows).fill().map(() => Array(this.cols).fill('')); 
+        this.board = Array(this.rows).fill().map(() => Array(this.cols).fill(''));
         this.winner = -1;
     }
 
     dropChip(col) {
-        if(this.gameStatus == "complete"){
-            return;
-        }
-        for (let row = this.rows - 1; row >= 0; row--) {  // Start from the bottom
+        for (let row = this.rows - 1; row >= 0; row--) {
             if (this.board[row][col] === '') {
                 this.board[row][col] = this.curPlayer;
-                if(this.checkWin(row, col)){
+                if (this.checkWin(row, col)) {
                     this.winner = this.curPlayer;
-                    console.log('${currentPlayer} wins!');
                 }
                 this.curPlayer = this.switchPlayer(this.curPlayer);
-                // 
                 return this.board;
             }
         }
     }
 
-    switchPlayer(curPlayer){
+    switchPlayer(curPlayer) {
         return (curPlayer == 0) ? 1 : 0;
     }
 
     checkWin(row, col) {
-        return this.checkDirection(row, col, 1, 0) ||  // Horizontal
-               this.checkDirection(row, col, 0, 1) ||  // Vertical
-               this.checkDirection(row, col, 1, 1) ||  // Diagonal right-down
-               this.checkDirection(row, col, 1, -1);   // Diagonal left-down
+        return this.winDirection(row, col, 0, 1) ||  // vert
+            this.winDirection(row, col, 1, 0) ||  // horiz
+            this.winDirection(row, col, 1, 1) ||  //right and down
+            this.winDirection(row, col, 1, -1);   // left and down
     }
-    
-    checkDirection(row, col, rowDir, colDir) {
+
+    winDirection(row, col, rowDir, colDir) {
         let count = 0;
         for (let i = -3; i <= 3; i++) {
             const r = row + i * rowDir;
@@ -86,9 +80,6 @@ class Game {
         }
         return false;
     }
-
-
 }
 
-let game = new Game();
-// var game = game || new Game();
+var game = game || new Game();
