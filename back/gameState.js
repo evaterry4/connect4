@@ -2,7 +2,7 @@ const http = require('http');
 const url = require('url');
 
 const hostname = "127.0.0.1";
-const port = 5000;
+const port = 5005;
 const server = http.createServer();
 
 server.on('request', ( request, response) => {
@@ -50,8 +50,11 @@ class Game {
         for (let row = this.rows - 1; row >= 0; row--) {  // Start from the bottom
             if (this.board[row][col] === '') {
                 this.board[row][col] = this.curPlayer;
+                if(this.checkWin(row, col)){
+                    console.log('${currentPlayer} wins!');
+                }
                 this.curPlayer = this.switchPlayer(this.curPlayer);
-                // this.checkWin(row, col);
+                // 
                 return this.board;
             }
         }
@@ -68,13 +71,12 @@ class Game {
                this.checkDirection(row, col, 1, -1);   // Diagonal left-down
     }
     
-    // Check a specific direction for four consecutive pieces
     checkDirection(row, col, rowDir, colDir) {
         let count = 0;
         for (let i = -3; i <= 3; i++) {
             const r = row + i * rowDir;
             const c = col + i * colDir;
-            if (r >= 0 && r < this.rows && c >= 0 && c < this.cols && this.board[r][c] === currentPlayer) {
+            if (r >= 0 && r < this.rows && c >= 0 && c < this.cols && this.board[r][c] === this.curPlayer) {
                 count++;
                 if (count === 4) return true;
             } else {
@@ -87,4 +89,5 @@ class Game {
 
 }
 
-var game = game || new Game();
+let game = new Game();
+// var game = game || new Game();
